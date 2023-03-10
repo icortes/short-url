@@ -1,13 +1,19 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabaseClient';
 
-export async function urlCreate(long_url: string): Promise<string> {
+export default function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<string>
+) {
   try {
-    const { data } = await supabase.from('urls').insert({ long_url }).select();
-    if (data) {
-      return data[0].long_url;
+    if (req.method === 'POST') {
+      let { body } = req;
+      let original_url = body.original_url as string;
+      console.log(req.method);
+      console.log(original_url);
+      res.status(200).send(original_url);
     }
-    return 'No data available.';
-  } catch (error) {
-    throw new Error('invalid url');
+  } catch (err) {
+    res.status(500).send('failed to load data');
   }
 }
